@@ -1,35 +1,27 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	t "gorgonia.org/tensor"
+)
 
 func main() {
 	fmt.Println("Hello")
 
-	inputs := []float32{1, 2, 3, 2.5}
+	inputs := t.New(t.WithBacking([]float32{1.0, 2.0, 3.0, 2.5}))
 
-	weights := [][]float32{
-		{0.2, 0.8, -0.5, 1.0},
-		{0.5, -0.91, 0.26, -0.5},
-		{-0.26, -0.27, 0.17, 0.87},
+	rawWeights := []float32{
+		0.2, 0.8, -0.5, 1,
+		0.5, -0.91, 0.26, -0.5,
+		-0.26, -0.27, 0.17, 0.87,
 	}
+	weights := t.New(t.WithShape(3, 4), t.WithBacking(rawWeights))
 
-	biases := []float32{2.0, 3.0, 0.5}
+	biases := t.New(t.WithBacking([]float32{2.0, 3, 0.5}))
 
-	layerOutputs := make([]float32, 3)
+	dP, _ := t.Dot(weights, inputs)
+	output, _ := t.Add(dP, biases)
 
-	for i := range weights {
-		neuronWeights := weights[i]
-		neuronBias := biases[i]
-
-		var neuronOutput float32 = 0
-		for j := range inputs {
-			neuronOutput += inputs[j] * neuronWeights[j]
-		}
-
-		neuronOutput += neuronBias
-		layerOutputs[i] = neuronOutput
-	}
-
-	fmt.Println(layerOutputs)
+	fmt.Println(output)
 
 }
